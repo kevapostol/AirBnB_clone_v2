@@ -1,16 +1,15 @@
 #!/usr/bin/python3
 """db_stroage module"""
-from sqlalchemy.orm import sessionmaker
+import os
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
-from sqlalchemy.orm import scoped_session
 from models.user import User
 from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
-import os
 
 
 class DBStorage:
@@ -19,6 +18,7 @@ class DBStorage:
 
     __engine = None
     __session = None
+    cls_names = [User, State, City, Amenity, Place, Review]
 
     def __init__(self):
         """Init function
@@ -35,28 +35,18 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Runs session queries and returns a dictionary
-        """
-        my_dict = {}
-        t = []
-        new_t = []
-        if cls is not None:
-            t = session.query(cls).all()
+        """query all objs"""
+        t_dict = {}
+        if cls is None:
+            for typ in self.cls_names:
+                for obj in self.__session.query(typ).all():
+                    key = "{}.{}".format(obj.__class__.__name__, obj.id)
+                    t_dict[key] = obj
         else:
-            class_list = [User, State, City, Amenity, Place, Review]
-
-            for cls_name in class_list:
-                t.append(session.query(cls_name).all())
-
-            for y in t:
-                for x in y:
-                    new_t.append(x)
-            t = new_t[:]
-
-        for obj in t:
-            my_dict['{}.{}'.format(obj.__class__.__name__, obj.id)] = obj
-
-        return my_dict
+            for obj in self.__session.query(cls).all():
+                key = "{}.{}".format(cls.__class__.__name__, obj.id)
+                t_dict[key] = obj
+        return t_dict
 
     def new(self, obj):
         """
@@ -82,11 +72,11 @@ class DBStorage:
         Reload objects to current db
         """
         Base.metadata.create_all(self.__engine)
-        session_fact = sessionmaker(bind=self.__engine)
-        Session = scoped_session(session_fact)
-        self.__session = Session(expire_on_commit=False)
+        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        self.__session = scoped_session(Session)
 
     def close(self):
         """Closes the session
         """
-        self.__session.close()
+        if self.__session:
+            self.__session.remove()
