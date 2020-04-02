@@ -17,7 +17,7 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 from models.engine.file_storage import FileStorage
-
+import models
 
 class TestConsole(unittest.TestCase):
     """this will test the console"""
@@ -38,6 +38,12 @@ class TestConsole(unittest.TestCase):
             os.remove("file.json")
         except Exception:
             pass
+
+    def setUp(self):
+        """Resets the file storage class"""
+        FileStorage._FileStorage__objects = {}
+        TestConsole.original_path = FileStorage._FileStorage__file_path
+        FileStorage._FileStorage__file_path = "test.json"
 
     def test_pep8_console(self):
         """Pep8 console.py"""
@@ -71,9 +77,10 @@ class TestConsole(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as f:
             self.consol.onecmd("quit")
             self.assertEqual('', f.getvalue())
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Using database storage instead of files system")
 
     def test_create(self):
-        """Test create command inpout"""
+        """Test create command input"""
         with patch('sys.stdout', new=StringIO()) as f:
             self.consol.onecmd("create")
             self.assertEqual(
@@ -88,6 +95,36 @@ class TestConsole(unittest.TestCase):
             self.consol.onecmd("all User")
             self.assertEqual(
                 "[[User]", f.getvalue()[:7])
+
+    def test_create_args_str(self):
+        """tests the updated create command"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User email=\"ACholberton@holbertonschool.com\"")
+            uid = "User" + f.getvalue().rstrip()
+            self.assertIn("email", models.storage.all()[uid].to_dic().keys())
+            self.assertIsInstance("models.storage.all()[uid].email, str")
+            self.assertEqual("ACholberton@holbertonschool.com",
+                             models.storage.all()[uid].email)
+
+    def test_create_args_int(self):
+        """test for create with an int"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User age=21")
+            uid = "User" + f.getvalue().rstrip()
+            self.assertIn("age", models.storage.all()[uid].to_dic().keys())
+            self.assertIsInstance("models.storage.all()[uid].age, int")
+            self.assertEqual(21, models.storage.all()[uid].age)
+
+    def test_create_args_multi(self):
+        """test for create command with multiple args"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User age=21")
+            uid = "User" + f.getvalue().rstrip()
+            self.assertIsInstance("models.storage.all()[uid].age, int")
+            self.assertEqual(21, models.storage.all()[uid].age)
+            self.assertIsInstance("models.storage.all()[uid].email, str")
+            self.assertEqual("ACholberton@holbertonschool.com",
+                             models.storage.all()[uid].email)
 
     def test_show(self):
         """Test show command inpout"""
