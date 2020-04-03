@@ -28,7 +28,7 @@ class Place(BaseModel, Base):
             review_list = []
             for obj in models.storage.all(Review).items():
                 if obj.place_id == self.id:
-                    city_list.append(obj)
+                    review_list.append(obj)
             return review_list
 
     __tablename__ = 'places'
