@@ -4,66 +4,54 @@ import unittest
 import os
 from models.base_model import BaseModel
 import pep8
+from datetime import date, time, datetime
 
 
 class TestBaseModel(unittest.TestCase):
-    """this will test the base model class"""
 
-    @classmethod
-    def setUpClass(cls):
-        """setup for the test"""
-        cls.base = BaseModel()
-        cls.base.name = "Kev"
-        cls.base.num = 20
-
-    @classmethod
-    def teardown(cls):
-        """at the end of the test this will tear it down"""
-        del cls.base
+    def setUp(self):
+        """ sets up an instance of a BaseModel """
+        self.m1 = BaseModel()
 
     def tearDown(self):
-        """teardown"""
-        try:
-            os.remove("file.json")
-        except Exception:
-            pass
+        """ tears down an instance of a BaseModel """
+        del self.m1
 
-    def test_pep8_BaseModel(self):
-        """Testing for pep8"""
-        style = pep8.StyleGuide(quiet=True)
-        p = style.check_files(['models/base_model.py'])
-        self.assertEqual(p.total_errors, 0, "fix pep8")
+    def test_diff_id(self):
+        """ tests to make sure both instances have different ids """
+        m2 = BaseModel()
+        self.assertNotEqual(self.m1.id, m2.id)
 
-    def test_checking_for_docstring_BaseModel(self):
-        """checking for docstrings"""
-        self.assertIsNotNone(BaseModel.__doc__)
-        self.assertIsNotNone(BaseModel.__init__.__doc__)
-        self.assertIsNotNone(BaseModel.__str__.__doc__)
-        self.assertIsNotNone(BaseModel.save.__doc__)
-        self.assertIsNotNone(BaseModel.to_dict.__doc__)
+    def test_attributes(self):
+        """ tests attributes and save/update times """
+        self.m1.name = "Pepe"
+        self.m1.my_number = 24
 
-    def test_method_BaseModel(self):
-        """chekcing if Basemodel have methods"""
-        self.assertTrue(hasattr(BaseModel, "__init__"))
-        self.assertTrue(hasattr(BaseModel, "save"))
-        self.assertTrue(hasattr(BaseModel, "to_dict"))
+        self.assertTrue(self.m1.name, "Pepe")
+        self.assertTrue(self.m1.my_number, 24)
 
-    def test_init_BaseModel(self):
-        """test if the base is an type BaseModel"""
-        self.assertTrue(isinstance(self.base, BaseModel))
+        created = self.m1.created_at
+        updated = self.m1.updated_at
+        self.m1.save()
+        created2 = self.m1.created_at
+        updated2 = self.m1.updated_at
 
-    def test_save_BaesModel(self):
-        """test if the save works"""
-        self.base.save()
-        self.assertNotEqual(self.base.created_at, self.base.updated_at)
+        self.assertEqual(created, created2)
+        self.assertNotEqual(updated, updated2)
 
-    def test_to_dict_BaseModel(self):
-        """test if dictionary works"""
-        base_dict = self.base.to_dict()
-        self.assertEqual(self.base.__class__.__name__, 'BaseModel')
-        self.assertIsInstance(base_dict['created_at'], str)
-        self.assertIsInstance(base_dict['updated_at'], str)
+    def test_str(self):
+        """ test to check the string representation """
+        self.m1.name = "Pepe"
+        string = "[{}] ({}) {}".format(self.m1.__class__.__name__,
+                                       self.m1.id,
+                                       self.m1.__dict__)
+        self.assertEqual(str(self.m1), string)
 
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_format(self):
+        """ test to check for time format """
+        self.m1.save()
+        m1_json = self.m1.to_dict()
+        updated = self.m1.updated_at
+        updated2 = datetime.strptime(m1_json["updated_at"],
+                                     "%Y-%m-%dT%H:%M:%S.%f")
+        self.assertEqual(updated, updated2)

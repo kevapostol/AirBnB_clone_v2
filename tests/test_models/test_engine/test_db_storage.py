@@ -21,7 +21,6 @@ class TestDBStorage(unittest.TestCase):
         self.storage = DBStorage()
         self.storage.reload()
 
-
     def tearDown(self):
         """ close the connection"""
         self.cur.close
