@@ -7,8 +7,9 @@ from models.base_model import BaseModel
 import pep8
 from datetime import date, time, datetime
 
-@unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") != "db",
-                 "Using filesystem isntead of database")
+
+@unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db",
+                 "Using database storage instead of filesystem")
 class TestCity(unittest.TestCase):
 
     def setUp(self):
