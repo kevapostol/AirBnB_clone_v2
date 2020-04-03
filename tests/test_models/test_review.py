@@ -5,69 +5,53 @@ import os
 from models.review import Review
 from models.base_model import BaseModel
 import pep8
+from datetime import date, time, datetime
 
 
 class TestReview(unittest.TestCase):
-    """this will test the place class"""
 
-    @classmethod
-    def setUpClass(cls):
-        """set up for test"""
-        cls.rev = Review()
-        cls.rev.place_id = "4321-dcba"
-        cls.rev.user_id = "123-bca"
-        cls.rev.text = "The srongest in the Galaxy"
-
-    @classmethod
-    def teardown(cls):
-        """at the end of the test this will tear it down"""
-        del cls.rev
+    def setUp(self):
+        """ sets up an instance of a Review """
+        self.r1 = Review()
 
     def tearDown(self):
-        """teardown"""
-        try:
-            os.remove("file.json")
-        except Exception:
-            pass
+        """ tears down an instance of a Review """
+        del self.r1
 
-    def test_pep8_Review(self):
-        """Tests pep8 style"""
-        style = pep8.StyleGuide(quiet=True)
-        p = style.check_files(['models/review.py'])
-        self.assertEqual(p.total_errors, 0, "fix pep8")
+    def test_pep8(self):
+        """ tests files to pep8 standard """
+        pep8style = pep8.StyleGuide(quiet=True)
+        result = pep8style.check_files(['models/review.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
 
-    def test_checking_for_docstring_Review(self):
-        """checking for docstrings"""
-        self.assertIsNotNone(Review.__doc__)
+    def test_diff_id(self):
+        """ tests to make sure both instances have different ids """
+        r2 = Review()
+        self.assertNotEqual(self.r1.id, r2.id)
 
-    def test_attributes_review(self):
-        """chekcing if review have attributes"""
-        self.assertTrue('id' in self.rev.__dict__)
-        self.assertTrue('created_at' in self.rev.__dict__)
-        self.assertTrue('updated_at' in self.rev.__dict__)
-        self.assertTrue('place_id' in self.rev.__dict__)
-        self.assertTrue('text' in self.rev.__dict__)
-        self.assertTrue('user_id' in self.rev.__dict__)
+    def test_attributes(self):
+        """ tests attributes """
+        self.assertTrue(hasattr(self.r1, "place_id"))
+        self.assertTrue(hasattr(self.r1, "user_id"))
+        self.assertTrue(hasattr(self.r1, "text"))
+        self.assertIsInstance(self.r1.place_id, str)
+        self.assertIsInstance(self.r1.user_id, str)
+        self.assertIsInstance(self.r1.text, str)
 
-    def test_is_subclass_Review(self):
-        """test if review is subclass of BaseModel"""
-        self.assertTrue(issubclass(self.rev.__class__, BaseModel), True)
+    def test_str(self):
+        """ test to check the string representation """
+        self.r1.name = "5 Stars"
+        string = "[{}] ({}) {}".format(self.r1.__class__.__name__,
+                                       self.r1.id,
+                                       self.r1.__dict__)
+        self.assertEqual(str(self.r1), string)
 
-    def test_attribute_types_Review(self):
-        """test attribute type for Review"""
-        self.assertEqual(type(self.rev.text), str)
-        self.assertEqual(type(self.rev.place_id), str)
-        self.assertEqual(type(self.rev.user_id), str)
-
-    def test_save_Review(self):
-        """test if the save works"""
-        self.rev.save()
-        self.assertNotEqual(self.rev.created_at, self.rev.updated_at)
-
-    def test_to_dict_Review(self):
-        """test if dictionary works"""
-        self.assertEqual('to_dict' in dir(self.rev), True)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_format(self):
+        """ test to check for time format """
+        self.r1.save()
+        r1_json = self.r1.to_dict()
+        updated = self.r1.updated_at
+        updated2 = datetime.strptime(r1_json["updated_at"],
+                                     "%Y-%m-%dT%H:%M:%S.%f")
+        self.assertEqual(updated, updated2)
