@@ -3,7 +3,7 @@
 from models.base_model import BaseModel
 from sqlalchemy import Column, Integer, String
 import os
-
+from sqlalchemy.orm import relationship
 
 class State(BaseModel):
     """This is the class for State
