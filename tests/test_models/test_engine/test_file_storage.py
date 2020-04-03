@@ -15,7 +15,7 @@ from models.engine.file_storage import FileStorage
 
 
 @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db",
-                "Using databasestorage instead of files")
+                 "Using databasestorage instead of files")
 class TestFileStorage(unittest.TestCase):
     '''this will test the FileStorage'''
 
@@ -66,9 +66,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertIsNotNone(obj[key])
 
     def test_reload_filestorage(self):
-        """
-        tests reload
-        """
+        """tests reload"""
         self.storage.save()
         Root = os.path.dirname(os.path.abspath("console.py"))
         path = os.path.join(Root, "file.json")

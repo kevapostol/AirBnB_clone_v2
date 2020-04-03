@@ -41,22 +41,19 @@ class DBStorage:
 
     def all(self, cls=None):
         """
-        Returns a dictionary
+        Returns a dictionary: a list of obj of one type
         """
-        my_dict = {}
-        types = []
-        if cls is not None:
+        if cls:
             types = self.__session.query(cls).all()
         else:
-            classes = [State, City, User, Place, Review, Amenity]
-            for cl in classes:
-                types.append(self.__session.query(cl).all())
-
-            types = [x for y in types for x in y]
-
-        for obj in types:
-            my_dict['{}.{}'.format(obj.__class__.__name__, obj.id)] = obj
-
+            all_classes = [Amenity, City, Place, Review, State, User]
+            types = []
+            for cls in all_classes:
+                types += self.__session.query(cls)
+        my_dict = {}
+        for obj in objects:
+            key = '{}.{}'.format(type(obj).__name__, obj.id)
+            my_dict[key] = obj
         return my_dict
 
     def new(self, obj):
