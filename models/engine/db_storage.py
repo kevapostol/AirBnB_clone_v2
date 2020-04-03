@@ -43,18 +43,19 @@ class DBStorage:
         """
         Returns a dictionary: a list of obj of one type
         """
+        cls_name = {"State": State,
+           "City": City}
+        obj = {}
+        cls_s = [value for key, value in cls_name.items()]
         if cls:
-            types = self.__session.query(cls).all()
-        else:
-            all_classes = [State, City]
-            types = []
-            for cls in all_classes:
-                types += self.__session.query(cls)
-        my_dict = {}
-        for obj in objects:
-            key = '{}.{}'.format(type(obj).__name__, obj.id)
-            my_dict[key] = obj
-        return my_dict
+            if type(cls) == str:
+                cls = cls_name[cls]
+            cls_s = [cls]
+        for one_class in cls_s:
+            for value in self.__session.query(one_class):
+                key = str(value.__class__.__name__) + "." + str(value.id)
+                obj[key] = value
+        return obj
 
     def new(self, obj):
         """
