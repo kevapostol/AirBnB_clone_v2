@@ -19,6 +19,7 @@ from models.review import Review
 from models.engine.file_storage import FileStorage
 import models
 
+
 class TestConsole(unittest.TestCase):
     """this will test the console"""
 
@@ -77,8 +78,9 @@ class TestConsole(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as f:
             self.consol.onecmd("quit")
             self.assertEqual('', f.getvalue())
-    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Using database storage instead of files system")
 
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db",
+                     "Using database storage instead of files system")
     def test_create(self):
         """Test create command input"""
         with patch('sys.stdout', new=StringIO()) as f:
@@ -99,11 +101,11 @@ class TestConsole(unittest.TestCase):
     def test_create_args_str(self):
         """tests the updated create command"""
         with patch('sys.stdout', new=StringIO()) as f:
-            self.consol.onecmd("create User email=\"ACholberton@holbertonschool.com\"")
+            self.consol.onecmd("create User email=\"AC@holbertonschool.com\"")
             uid = "User" + f.getvalue().rstrip()
             self.assertIn("email", models.storage.all()[uid].to_dic().keys())
             self.assertIsInstance("models.storage.all()[uid].email, str")
-            self.assertEqual("ACholberton@holbertonschool.com",
+            self.assertEqual("AC@holbertonschool.com",
                              models.storage.all()[uid].email)
 
     def test_create_args_int(self):
@@ -123,7 +125,7 @@ class TestConsole(unittest.TestCase):
             self.assertIsInstance("models.storage.all()[uid].age, int")
             self.assertEqual(21, models.storage.all()[uid].age)
             self.assertIsInstance("models.storage.all()[uid].email, str")
-            self.assertEqual("ACholberton@holbertonschool.com",
+            self.assertEqual("AC@holbertonschool.com",
                              models.storage.all()[uid].email)
 
     def test_show(self):
