@@ -26,10 +26,10 @@ class DBStorage:
 
     def __init__(self):
         """Initialization method"""
-        user = os.environ['HBNB_MYSQL_USER']
-        pas = os.environ['HBNB_MYSQL_PWD']
-        host = os.environ['HBNB_MYSQL_HOST']
-        db = os.environ['HBNB_MYSQL_DB']
+        user = os.environ.get('HBNB_MYSQL_USER')
+        pas = os.environ.get('HBNB_MYSQL_PWD')
+        host = os.environ.get('HBNB_MYSQL_HOST')
+        db = os.environ.get('HBNB_MYSQL_DB')
 
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
                                       .format(user,
@@ -43,18 +43,20 @@ class DBStorage:
         """
         Returns a dictionary: a list of obj of one type
         """
+        cls_name = {"State": State,
+           "City": City,
+           "User": User}
+        obj = {}
+        cls_s = [value for key, value in cls_name.items()]
         if cls:
-            types = self.__session.query(cls).all()
-        else:
-            all_classes = [Amenity, City, Place, Review, State, User]
-            types = []
-            for cls in all_classes:
-                types += self.__session.query(cls)
-        my_dict = {}
-        for obj in objects:
-            key = '{}.{}'.format(type(obj).__name__, obj.id)
-            my_dict[key] = obj
-        return my_dict
+            if type(cls) == str:
+                cls = cls_name[cls]
+            cls_s = [cls]
+        for one_class in cls_s:
+            for value in self.__session.query(one_class):
+                key = str(value.__class__.__name__) + "." + str(value.id)
+                obj[key] = value
+        return obj
 
     def new(self, obj):
         """
@@ -80,12 +82,11 @@ class DBStorage:
         Reload objects to current database session
         """
         Base.metadata.create_all(self.__engine)
-        session_fact = sessionmaker(bind=self.__engine)
-        Session = scoped_session(session_fact)
-        self.__session = Session(expire_on_commit=False)
+        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        self.__session = scoped_session(Session)
 
     def close(self):
         """
         Remove the method on the private session attribute
         """
-        self.__session.close()
+        self.__session.remove()
