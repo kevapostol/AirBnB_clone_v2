@@ -44,7 +44,8 @@ class DBStorage:
         Returns a dictionary: a list of obj of one type
         """
         cls_name = {"State": State,
-           "City": City}
+           "City": City,
+           "User": User}
         obj = {}
         cls_s = [value for key, value in cls_name.items()]
         if cls:
