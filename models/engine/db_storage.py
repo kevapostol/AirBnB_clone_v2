@@ -45,7 +45,8 @@ class DBStorage:
         """
         cls_name = {"State": State,
                     "City": City,
-                    "User": User}
+                    "User": User,
+                    "Place": Place}
         obj = {}
         cls_s = [value for key, value in cls_name.items()]
         if cls:
