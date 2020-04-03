@@ -43,7 +43,7 @@ class DBStorage:
         """
         Returns a dictionary: a list of obj of one type
         """
-         if cls:
+        if cls:
             types = self.__session.query(cls).all()
         else:
             all_classes = [Amenity, City, Place, Review, State, User]
