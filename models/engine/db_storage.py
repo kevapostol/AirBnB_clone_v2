@@ -26,10 +26,10 @@ class DBStorage:
 
     def __init__(self):
         """Initialization method"""
-        user = os.environ['HBNB_MYSQL_USER']
-        pas = os.environ['HBNB_MYSQL_PWD']
-        host = os.environ['HBNB_MYSQL_HOST']
-        db = os.environ['HBNB_MYSQL_DB']
+        user = os.environ.get('HBNB_MYSQL_USER')
+        pas = os.environ.get('HBNB_MYSQL_PWD')
+        host = os.environ.get('HBNB_MYSQL_HOST')
+        db = os.environ.get('HBNB_MYSQL_DB')
 
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
                                       .format(user,
@@ -46,7 +46,7 @@ class DBStorage:
         if cls:
             types = self.__session.query(cls).all()
         else:
-            all_classes = [Amenity, City, Place, Review, State, User]
+            all_classes = [State, City]
             types = []
             for cls in all_classes:
                 types += self.__session.query(cls)
@@ -80,12 +80,11 @@ class DBStorage:
         Reload objects to current database session
         """
         Base.metadata.create_all(self.__engine)
-        session_fact = sessionmaker(bind=self.__engine)
-        Session = scoped_session(session_fact)
-        self.__session = Session(expire_on_commit=False)
+        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        self.__session = scoped_session(Session)
 
     def close(self):
         """
         Remove the method on the private session attribute
         """
-        self.__session.close()
+        self.__session.remove()
