@@ -2,10 +2,10 @@
 """Database storage testing"""
 import unittest
 import os
+import pep8
 import MySQLdb
-import models.engine.db_storage
+from models.engine.db_storage import DBStorage
 from models.state import State
-from models import storage
 
 
 @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") != "db",
@@ -31,3 +31,19 @@ class TestDBStorage(unittest.TestCase):
         style = pep8.StyleGuide(quiet=True)
         p = style.check_files(['models/engine/file_db_storage.py'])
         self.assertEqual(p.total_errors, 0, "fix pep8")
+
+         @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db', 'db')
+
+    def test_add(self):
+        """Test add method"""
+        self.cur.execute("""
+        INSERT INTO states (id, created_at, updated_at, name)
+        VALUES (1, '2017-11-10 00:30:12', '2017-11-10 00:30:12', "California")
+        """)
+        self.cur.execute('SELECT * FROM states')
+        rows = self.cur.fetchall()
+        self.assertEqual(len(rows), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()
