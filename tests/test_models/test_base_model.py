@@ -55,3 +55,6 @@ class TestBaseModel(unittest.TestCase):
         updated2 = datetime.strptime(m1_json["updated_at"],
                                      "%Y-%m-%dT%H:%M:%S.%f")
         self.assertEqual(updated, updated2)
+
+if __name__ == "__main__":
+    unittest.main()
