@@ -18,7 +18,7 @@ from models.place import Place
 from models.review import Review
 from models.engine.file_storage import FileStorage
 import models
-
+from models.engine.db_storage import DBStorage, Base
 
 class TestConsole(unittest.TestCase):
     """this will test the console"""
@@ -45,6 +45,10 @@ class TestConsole(unittest.TestCase):
         FileStorage._FileStorage__objects = {}
         TestConsole.original_path = FileStorage._FileStorage__file_path
         FileStorage._FileStorage__file_path = "test.json"
+        if isinstance(models.storage, DBStorage):
+            models.storage._DBStorage__session.close()
+            Base.metadata.drop_all(models.storage._DBStorage__engine)
+            models.storage.reload()
 
     def test_pep8_console(self):
         """Pep8 console.py"""
@@ -98,6 +102,26 @@ class TestConsole(unittest.TestCase):
             self.assertEqual(
                 "[[User]", f.getvalue()[:7])
 
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db",
+                     "Using database storage instead of files system")
+    def test_create_db(self):
+        """tests db create"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create")
+            self.assertEqual(
+                "** Class name missing **\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create fluff")
+            self.assertEqual(
+                "** Class doesn't exist **\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User email=\"AC\" passwd=\"HBTN\"")
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("all User")
+            print(f.getvalue())
+            self.assertEqual(
+                "[[USER]]", f.getvalue())
+
     def test_create_args_str(self):
         """tests the updated create command"""
         with patch('sys.stdout', new=StringIO()) as f:
@@ -107,6 +131,8 @@ class TestConsole(unittest.TestCase):
             self.assertIsInstance("models.storage.all()[uid].email, str")
             self.assertEqual("AC@holbertonschool.com",
                              models.storage.all()[uid].email)
+            self.assertEqual("HBTN",
+                             models.storage.all()[uid].passwd)
 
     def test_create_args_int(self):
         """test for create with an int"""
