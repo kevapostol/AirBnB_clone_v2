@@ -5,18 +5,27 @@ import os
 from models.state import State
 from models.base_model import BaseModel
 import pep8
-from datetime import date, time, datetime
 
 
 class TestState(unittest.TestCase):
 
-    def setUp(self):
-        """ sets up an instance of a State """
-        self.s1 = State()
+    @classmethod
+    def setUpClass(cls):
+        """ test set up"""
+        cls.state = State()
+        cls.state.name = "NC"
+
+    @classmethod
+    def tearDown(self):
+        """ tears down at the end of test"""
+        del cls.state
 
     def tearDown(self):
-        """ tears down an instance of a State """
-        del self.s1
+        """teardown"""
+        try:
+            os.remove("file.json")
+        except Exception:
+            pass
 
     def test_pep8(self):
         """ tests files to pep8 standard """
@@ -53,14 +62,17 @@ class TestState(unittest.TestCase):
                                        self.s1.__dict__)
         self.assertEqual(str(self.s1), string)
 
-    def test_format(self):
-        """ test to check for time format """
-        self.s1.save()
-        s1_json = self.s1.to_dict()
-        updated = self.s1.updated_at
-        updated2 = datetime.strptime(s1_json["updated_at"],
-                                     "%Y-%m-%dT%H:%M:%S.%f")
-        self.assertEqual(updated, updated2)
+    def test_checking_for_docstring_State(self):
+        """ checking for docstrings"""
+        self.assertIsNotNone(State.__doc__)
+
+    def test_is_subclass_State(self):
+        """ test if State is subclass of BaseModel"""
+        self.assertTrue(issubclass(self.state.__class__, BaseModel), True)
+
+    def test_to_dict_State(self):
+        """ test if dictionary works"""
+        self.assertEqual('to_dict' in dir(self.state), True)
 
 if __name__ == "__main__":
     unittest.main()

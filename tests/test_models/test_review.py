@@ -5,35 +5,44 @@ import os
 from models.review import Review
 from models.base_model import BaseModel
 import pep8
-from datetime import date, time, datetime
 
 
-@unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db",
-                 "Using storage database instead of filesystem")
 class TestReview(unittest.TestCase):
 
-    def setUp(self):
-        """ sets up an instance of a Review """
-        self.r1 = Review()
+    @classmethod
+    def setUp(cls):
+        """ sets up test"""
+        cls.review = Review()
+        cls.review.place_id = "0246-kdks"
+        cls.review.user_id = "6420-kds"
+        cls.review.text = "Cutest cottage in the world"
+
+    @classmethod
+    def tearDown(cls):
+        """ tears down at the end of the test"""
+        del cls.review
 
     def tearDown(self):
-        """ tears down an instance of a Review """
-        del self.r1
+        """teardown"""
+        try:
+            os.remove("file.json")
+        except Exception:
+            pass
 
     def test_pep8(self):
-        """ tests files to pep8 standard """
+        """ tests files to pep8 standard"""
         pep8style = pep8.StyleGuide(quiet=True)
         result = pep8style.check_files(['models/review.py'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 
     def test_diff_id(self):
-        """ tests to make sure both instances have different ids """
+        """ tests to make sure both instances have different ids"""
         r2 = Review()
         self.assertNotEqual(self.r1.id, r2.id)
 
     def test_attributes(self):
-        """ tests attributes """
+        """ tests attributes"""
         self.assertTrue(hasattr(self.r1, "place_id"))
         self.assertTrue(hasattr(self.r1, "user_id"))
         self.assertTrue(hasattr(self.r1, "text"))
@@ -42,18 +51,24 @@ class TestReview(unittest.TestCase):
         self.assertIsInstance(self.r1.text, str)
 
     def test_str(self):
-        """ test to check the string representation """
+        """ test to check the string representation"""
         self.r1.name = "5 Stars"
         string = "[{}] ({}) {}".format(self.r1.__class__.__name__,
                                        self.r1.id,
                                        self.r1.__dict__)
         self.assertEqual(str(self.r1), string)
 
-    def test_format(self):
-        """ test to check for time format """
-        self.r1.save()
-        r1_json = self.r1.to_dict()
-        updated = self.r1.updated_at
-        updated2 = datetime.strptime(r1_json["updated_at"],
-                                     "%Y-%m-%dT%H:%M:%S.%f")
-        self.assertEqual(updated, updated2)
+    def test_checking_for_docstring_Review(self):
+        """ checking for docstrings"""
+        self.assertIsNotNone(Review.__doc__)
+
+    def test_is_subclass_Review(self):
+        """ test if review is subclass of BaseModel"""
+        self.assertTrue(issubclass(self.rev.__class__, BaseModel), True)
+
+    def test_to_dict_Review(self):
+        """test if dictionary works"""
+        self.assertEqual('to_dict' in dir(self.rev), True)
+
+if __name__ == "__main__":
+    unittest.main()

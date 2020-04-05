@@ -5,20 +5,37 @@ import os
 from models.place import Place
 from models.base_model import BaseModel
 import pep8
-from datetime import date, time, datetime
 
 
-@unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db",
-                 "Using storage database instead of filesystem")
 class TestPlace(unittest.TestCase):
 
-    def setUp(self):
-        """ sets up an instance of a Place """
-        self.p1 = Place()
+    @classmethod
+    def setUp(cls):
+        """ Set up for tests"""
+        cls.place = Place()
+        cls.place.user_id = "0123-abcd"
+        cls.place.city_id = "3210-dcba"
+        cls.place.name = "Hexagon House"
+        cls.place.description = "A cute cottage by the sea"
+        cls.place.number_rooms = 3
+        cls.place.number_bathrooms = 2
+        cls.place.max_guest = 200
+        cls.place.price_by_night = 100
+        cls.place.latitude = 37.7749
+        cls.place.longitude = 122.4194
+        cls.place.amenity_ids = ["2468-fghijkl"]
+
+    @classmethod
+    def teardown(cls):
+        """ tears it down"""
+        del cls.place
 
     def tearDown(self):
         """ tears down an instance of a Place """
-        del self.p1
+        try:
+            os.remove("file.json")
+        except Exception:
+            pass
 
     def test_pep8(self):
         """ tests files to pep8 standard """
@@ -68,14 +85,9 @@ class TestPlace(unittest.TestCase):
                                        self.p1.__dict__)
         self.assertEqual(str(self.p1), string)
 
-    def test_format(self):
-        """ test to check for time format """
-        self.p1.save()
-        p1_json = self.p1.to_dict()
-        updated = self.p1.updated_at
-        updated2 = datetime.strptime(p1_json["updated_at"],
-                                     "%Y-%m-%dT%H:%M:%S.%f")
-        self.assertEqual(updated, updated2)
+    def test_to_dict_Place(self):
+        """test if dictionary works"""
+        self.assertEqual('to_dict' in dir(self.place), True)
 
 if __name__ == "__main__":
     unittest.main()

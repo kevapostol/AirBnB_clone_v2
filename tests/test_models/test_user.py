@@ -5,18 +5,30 @@ import os
 from models.user import User
 from models.base_model import BaseModel
 import pep8
-from datetime import date, time, datetime
 
 
 class TestUser(unittest.TestCase):
 
-    def setUp(self):
-        """ sets up an instance of a User """
-        self.u1 = User()
+    @classmethod
+    def setUpClass(cls):
+        """ test set up"""
+        cls.user = User()
+        cls.user.first_name = "Brad"
+        cls.user.last_name = "Goldilocks"
+        cls.user.email = "erika.caoili@gmail.com"
+        cls.user.password = "qttt3"
+
+    @classmethod
+    def tearDown(cls):
+        """ tears down at the end of the test"""
+        del cls.user
 
     def tearDown(self):
-        """ tears down an instance of a User """
-        del self.u1
+        """ teardown"""
+        try:
+            os.remove("file.json")
+        except Exception:
+            pass
 
     def test_diff_id(self):
         """ tests to make sure both instances have different ids """
@@ -38,14 +50,17 @@ class TestUser(unittest.TestCase):
                                        self.u1.__dict__)
         self.assertEqual(str(self.u1), string)
 
-    def test_format(self):
-        """ test to check for time format """
-        self.u1.save()
-        u1_json = self.u1.to_dict()
-        updated = self.u1.updated_at
-        updated2 = datetime.strptime(u1_json["updated_at"],
-                                     "%Y-%m-%dT%H:%M:%S.%f")
-        self.assertEqual(updated, updated2)
+    def test_checking_for_docstring_User(self):
+        """ checking for docstrings"""
+        self.assertIsNotNone(User.__doc__)
+
+    def test_is_subclass_User(self):
+        """ test if User is subclass of Basemodel"""
+        self.assertTrue(issubclass(self.user.__class__, BaseModel), True)
+
+    def test_to_dict_User(self):
+        """ test if dictionary works"""
+        self.assertEqual('to_dict' in dir(self.user), True)
 
 if __name__ == "__main__":
     unittest.main()

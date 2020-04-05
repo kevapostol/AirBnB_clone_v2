@@ -14,8 +14,9 @@ from models.review import Review
 from models.engine.file_storage import FileStorage
 
 
-@unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db",
-                 "Using databasestorage instead of files")
+'''@unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Incorrect DB")'''
+
+
 class TestFileStorage(unittest.TestCase):
     '''this will test the FileStorage'''
 
@@ -46,6 +47,7 @@ class TestFileStorage(unittest.TestCase):
         p = style.check_files(['models/engine/file_storage.py'])
         self.assertEqual(p.total_errors, 0, "fix pep8")
 
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Incorrect DB")
     def test_all(self):
         """tests if all works in File Storage"""
         storage = FileStorage()
@@ -54,6 +56,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertEqual(type(obj), dict)
         self.assertIs(obj, storage._FileStorage__objects)
 
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Incorrect DB")
     def test_new(self):
         """test when new is created"""
         storage = FileStorage()
@@ -65,6 +68,7 @@ class TestFileStorage(unittest.TestCase):
         key = user.__class__.__name__ + "." + str(user.id)
         self.assertIsNotNone(obj[key])
 
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Incorrect DB")
     def test_reload_filestorage(self):
         """tests reload"""
         self.storage.save()

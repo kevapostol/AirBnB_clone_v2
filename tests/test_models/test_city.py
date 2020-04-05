@@ -4,21 +4,31 @@ import unittest
 import os
 from models.city import City
 from models.base_model import BaseModel
+from models.engine.db_storage import DBStorage
 import pep8
-from datetime import date, time, datetime
 
 
-@unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db",
-                 "Using database storage instead of filesystem")
 class TestCity(unittest.TestCase):
+    """ test for the City class"""
 
-    def setUp(self):
-        """ sets up an instance of a City """
-        self.c1 = City()
+    @classmethod
+    def setUpClass(cls):
+        """ Test Setup"""
+        cls.city = City()
+        cls.city.name = "San Francisco"
+        cls.city.state_id = "CA"
+
+    @classmethod
+    def tearDown(cls):
+        """ tears down at the end of the test"""
+        del cls.city
 
     def tearDown(self):
-        """ tears down an instance of a City """
-        del self.c1
+        """ teardown"""
+        try:
+            os.remove("file.json")
+        except Exception:
+            pass
 
     def test_pep8(self):
         """ tests files to pep8 standard """
@@ -47,14 +57,22 @@ class TestCity(unittest.TestCase):
                                        self.c1.__dict__)
         self.assertEqual(str(self.c1), string)
 
-    def test_format(self):
-        """ test to check for time format """
-        self.c1.save()
-        c1_json = self.c1.to_dict()
-        updated = self.c1.updated_at
-        updated2 = datetime.strptime(c1_json["updated_at"],
-                                     "%Y-%m-%dT%H:%M:%S.%f")
-        self.assertEqual(updated, updated2)
+    def test_checking_for_docstring_City(self):
+        """checking for docstrings"""
+        self.assertIsNotNone(City.__doc__)
+
+    def test_is_subclass_City(self):
+        """ test if City is subclass of Basemodel"""
+        self.assertTrue(issubclass(self.city.__class__, BaseModel), True)
+
+    def test_attribute_types_City(self):
+        """ test attribute type for City"""
+        self.assertEqual(type(self.city.name), str)
+        self.assertEqual(type(self.city.state_id), str)
+
+    def test_to_dict_City(self):
+        """test if dictionary works"""
+        self.assertEqual('to_dict' in dir(self.city), True)
 
 if __name__ == "__main__":
     unittest.main()
