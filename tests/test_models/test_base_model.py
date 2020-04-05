@@ -85,5 +85,12 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsInstance(base_dict['created_at'], str)
         self.assertIsInstance(base_dict['updated_at'], str)
 
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     "Incorrect storage type")
+    def test_save_User(self):
+        """test if the save works"""
+        self.user.save()
+        self.assertNotEqual(self.user.created_at, self.user.updated_at)
+
 if __name__ == "__main__":
     unittest.main()
