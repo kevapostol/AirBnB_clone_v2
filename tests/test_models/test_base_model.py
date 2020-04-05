@@ -85,7 +85,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsInstance(base_dict['created_at'], str)
         self.assertIsInstance(base_dict['updated_at'], str)
 
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+@unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                      "Incorrect storage type")
     def test_save_User(self):
         """test if the save works"""
