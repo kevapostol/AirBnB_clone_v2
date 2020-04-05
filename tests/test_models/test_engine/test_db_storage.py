@@ -16,11 +16,6 @@ class TestDBStorage(unittest.TestCase):
         self.storage = DBStorage()
         self.storage.reload()
 
-    def tearDown(self):
-        """ close the connection"""
-        self.cur.close
-        self.db.close()
-
     def test_pep8_db_FileStorage(self):
         """Tests pep8 style"""
         style = pep8.StyleGuide(quiet=True)
