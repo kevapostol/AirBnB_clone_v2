@@ -7,20 +7,8 @@ def do_pack():
     """
     return the archive path  if the archive path has been correctly generated
     """
-    is_dir = os.path.dir()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    # is_dir = os.path.dir()
+
     date = datetime.datetime.now()
     archive = 'versions/web_static_{}{}{}{}{}{}'.format(date.year,
                                                         date.month,
