@@ -21,7 +21,7 @@ echo "<html>
 # Create a symbolic link /data/web_static/current linked to the /data/web_static/releases/test/ folder.
 # -s is create a symbolic link
 # -f is if the symbolic link already exists, it should be deleted and recreated every time the script is ran.
-ln -sf /data/web_static/releases/test/ /data/web_static/current
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
 # Give ownership of the /data/ folder to the ubuntu user AND group
 # -R is recursive
