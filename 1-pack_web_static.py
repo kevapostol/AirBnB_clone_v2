@@ -26,4 +26,4 @@ def do_pack():
     if check.failed:
         return None
     else:
-        return path
+        return check
