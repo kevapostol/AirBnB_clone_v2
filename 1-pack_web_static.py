@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 # a Fabric script that generates a .tgz archive
 # from the contents of web_static
-
-
-import os.path
-from os import path
 from fabric.api import *
 from datetime import datetime
 
