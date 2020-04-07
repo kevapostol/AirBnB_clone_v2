@@ -9,6 +9,9 @@ from fabric.contrib import files
 from datetime import datetime
 
 
+env.user = "ubuntu"
+env.hosts = ['34.74.9.233', '18.215.156.149']
+
 def do_pack():
     """do pack script for compressing
     """
