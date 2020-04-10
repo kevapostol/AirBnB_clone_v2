@@ -51,8 +51,9 @@ def do_deploy(archive_path):
     else:
         return True
 
+
 def deploy():
-    """Creates and distributes an archive to web servers
+    """Creates and distributes an archive to web servers web-01 and web-02
     """
     my_archive = do_pack()
     if my_archive is None:
