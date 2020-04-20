@@ -50,7 +50,7 @@ def pythonIsCool():
 @app.route("/number/<int:n>", strict_slashes=False)
 def number(n):
     '''
-    rtype: int
+    rtype: str
     '''
     return "{} is a number".format(n)
 
