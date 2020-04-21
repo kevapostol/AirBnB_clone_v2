@@ -28,7 +28,7 @@ def cText(text):
     '''
     rtype: str
     '''
-    return text.replace('_', ' ')
+    return "C {}".format(text.replace('_', ' '))
 
 
 if __name__ == "__main__":
