@@ -22,7 +22,7 @@ def show_states_and_cities(id=None):
         for state in state_dict.values():
             if state.id == id:
                 found = state
-    return render_template('9-states.html', state_dict=state_dict, 
+    return render_template('9-states.html', state_dict=state_dict,
                            id=id, found=found)
 
 
